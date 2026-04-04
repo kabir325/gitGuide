@@ -83,6 +83,7 @@ This command will:
 1. Check if you have a remote origin set (and prompt you to add one if you don't).
 2. Ask if you want to enable **GitHub MCP Integration**.
 3. If enabled, prompt you for a GitHub Personal Access Token, saving it securely to a local `.env` file and creating a `.gitguide.config.json` file.
+4. Keep auto execute turned off by default so commands still require approval until you enable it in settings.
 
 At any time, you can reopen configuration and update your repository settings with:
 ```bash
@@ -113,7 +114,7 @@ gitguide commit
 ```
 
 ### 4. Settings
-Open an interactive settings menu to update the remote origin, enable or disable GitHub MCP, and manage the saved GitHub token.
+Open an interactive settings menu to update the remote origin, enable or disable auto execute, manage GitHub MCP, and manage the saved GitHub token.
 ```bash
 gitguide settings
 ```
