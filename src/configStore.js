@@ -49,6 +49,20 @@ export function setGitHubMcpEnabled(enabled, projectDir = process.cwd()) {
   return nextConfig;
 }
 
+export function setAutoExecuteEnabled(enabled, projectDir = process.cwd()) {
+  const config = readProjectConfig(projectDir);
+  const nextConfig = {
+    ...config,
+    execution: {
+      ...(config.execution || {}),
+      autoExecute: enabled
+    }
+  };
+
+  writeProjectConfig(nextConfig, projectDir);
+  return nextConfig;
+}
+
 export function readEnvFile(projectDir = process.cwd()) {
   const envPath = getProjectEnvPath(projectDir);
 

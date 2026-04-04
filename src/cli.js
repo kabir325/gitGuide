@@ -59,7 +59,7 @@ program
 program
   .command('settings')
   .alias('setting')
-  .description('Open interactive GitGuide settings for remotes and MCP features')
+  .description('Open interactive GitGuide settings for remotes, auto execute, and MCP features')
   .action(settingsCommand);
 
 program.parse(process.argv);

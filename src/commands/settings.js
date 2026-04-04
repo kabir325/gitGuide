@@ -6,6 +6,7 @@ import { getConfig } from '../config.js';
 import {
   ensureGitignoreEntry,
   removeEnvVar,
+  setAutoExecuteEnabled,
   setGitHubMcpEnabled,
   upsertEnvVar
 } from '../configStore.js';
@@ -22,9 +23,11 @@ function renderCurrentSettings(config) {
   const remote = getRemoteOrigin() || 'Not configured';
   const mcpState = config.mcp.github.enabled ? 'Enabled' : 'Disabled';
   const tokenState = config.mcp.github.token ? 'Configured' : 'Missing';
+  const autoExecuteState = config.execution.autoExecute ? 'Enabled' : 'Disabled';
 
   console.log(chalk.bold.blue('\nGitGuide Settings\n'));
   console.log(chalk.white(`Remote origin: `) + chalk.cyan(remote));
+  console.log(chalk.white(`Auto execute: `) + chalk.cyan(autoExecuteState));
   console.log(chalk.white(`GitHub MCP: `) + chalk.cyan(mcpState));
   console.log(chalk.white(`GitHub token: `) + chalk.cyan(tokenState));
   console.log('');
@@ -40,6 +43,7 @@ function truncateValue(value, maxLength = 58) {
 
 function buildSettingsChoices(config) {
   const remote = truncateValue(getRemoteOrigin() || 'Not configured');
+  const autoExecuteState = config.execution.autoExecute ? 'Enabled' : 'Disabled';
   const mcpState = config.mcp.github.enabled ? 'Enabled' : 'Disabled';
   const tokenState = config.mcp.github.token ? 'Configured' : 'Missing';
 
@@ -48,6 +52,11 @@ function buildSettingsChoices(config) {
       name: `Remote origin: ${remote}`,
       value: 'remote',
       description: 'Update the GitHub repository remote URL'
+    },
+    {
+      name: `Auto execute: ${autoExecuteState}`,
+      value: 'auto-execute',
+      description: 'Skip approval prompts and run the plan automatically'
     },
     {
       name: `GitHub MCP: ${mcpState}`,
@@ -96,6 +105,19 @@ async function updateRemoteOrigin() {
     spinner.succeed('Remote origin updated.');
   } catch (error) {
     spinner.fail('Failed to update remote origin.');
+    console.log(chalk.red(error.message));
+  }
+}
+
+function toggleAutoExecute(config) {
+  const nextEnabled = !config.execution.autoExecute;
+  const spinner = ora(`${nextEnabled ? 'Enabling' : 'Disabling'} auto execute...`).start();
+
+  try {
+    setAutoExecuteEnabled(nextEnabled);
+    spinner.succeed(`Auto execute ${nextEnabled ? 'enabled' : 'disabled'}.`);
+  } catch (error) {
+    spinner.fail('Failed to update auto execute setting.');
     console.log(chalk.red(error.message));
   }
 }
@@ -182,6 +204,11 @@ export async function settingsCommand() {
 
     if (action === 'remote') {
       await updateRemoteOrigin();
+      continue;
+    }
+
+    if (action === 'auto-execute') {
+      toggleAutoExecute(config);
       continue;
     }
 
