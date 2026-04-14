@@ -13,6 +13,7 @@ import { createPullRequestCommand } from './commands/pr.js';
 import { undoCommand } from './commands/undo.js';
 import { resolveConflictsCommand } from './commands/resolveConflicts.js';
 import { evaluateModelsCommand } from './commands/evaluateModels.js';
+import { cherryPickCommand } from './commands/cherryPick.js';
 import { getPackageVersion } from './packageInfo.js';
 
 const program = new Command();
@@ -92,5 +93,17 @@ program
   .command('evaluate-models')
   .description('Compare Ollama models and store the preferred model in config')
   .action(evaluateModelsCommand);
+
+program
+  .command('cherry-pick [commits...]')
+  .description('Cherry-pick one or more commits with guided conflict handling')
+  .option('--continue', 'Continue an in-progress cherry-pick')
+  .option('--abort', 'Abort an in-progress cherry-pick')
+  .option('--skip', 'Skip the current commit in an in-progress cherry-pick')
+  .option('-i, --interactive', 'Pick commits interactively')
+  .option('-m, --mainline <parent>', 'Select mainline parent number for merge commits')
+  .option('--no-commit', 'Apply changes without committing')
+  .option('--signoff', 'Add Signed-off-by line')
+  .action(cherryPickCommand);
 
 program.parse(process.argv);
